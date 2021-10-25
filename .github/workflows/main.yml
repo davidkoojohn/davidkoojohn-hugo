@@ -1,28 +1,27 @@
-name: Deployment
-
+name: CI
 on:
   push:
-    branches: [main]
-
+    branches:
+      - main
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Install Hugo
-        uses: peaceiris/actions-hugo@v2
+      - name: checkout
+        uses: actions/checkout@master
         with:
-          hugo-version: "0.80.0"
-
+          submodules: true
+      - name: Setup Hugo
+        uses: peaceiris/actions-hugo@v2.2.2
+        with:
+          hugo-version: '0.80.0'
+          extended: true
       - name: Build
-        run: hugo --gc --minify
-
+        run: hugo --minify
       - name: Deploy
-        uses: JamesIves/github-pages-deploy-action@releases/v3
-        with:
-          ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
-          BRANCH: gh-pages
-          FOLDER: public
+        uses: peaceiris/actions-gh-pages@v2.5.1
+        env:
+          ACTIONS_DEPLOY_KEY: ${{ secrets.ACCESS_TOKEN }}
+          EXTERNAL_REPOSITORY: davidkoojohn.github.io
+          PUBLISH_BRANCH: gh-pages
+          PUBLISH_DIR: public
